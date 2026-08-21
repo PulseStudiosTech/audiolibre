@@ -10,7 +10,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;
 use serde_json::Value;
 
-const SOCKET_PATH: &str = "/tmp/audiolibre.sock";
+
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -31,10 +31,10 @@ fn main() {
         }
     };
 
-    let mut stream = match UnixStream::connect(SOCKET_PATH) {
+    let mut stream = match std::os::unix::net::UnixStream::connect(audiolibre_engine::ipc::SOCKET_PATH) {
         Ok(s) => s,
         Err(e) => {
-            eprintln!("Could not connect to daemon at {}: {}", SOCKET_PATH, e);
+            eprintln!("Could not connect to daemon at {}: {}", audiolibre_engine::ipc::SOCKET_PATH, e);
             eprintln!("Is audiod running?");
             std::process::exit(1);
         }

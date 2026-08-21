@@ -5,7 +5,7 @@ use audiolibre_engine::ipc::IpcServer;
 use std::sync::Arc;
 
 #[cfg(unix)]
-const SOCKET_PATH: &str = "/tmp/audiolibre.sock";
+
 
 #[tokio::main]
 async fn main() {
@@ -58,8 +58,8 @@ async fn main() {
     log::info!("Buses: {:?}", mixer.get_buses());
 
     // Start IPC server
-    let server = IpcServer::new(SOCKET_PATH, mixer.clone(), router.clone(), devices.clone());
-    log::info!("Starting IPC server at {}", SOCKET_PATH);
+    let server = audiolibre_engine::ipc::IpcServer::new(audiolibre_engine::ipc::SOCKET_PATH, mixer.clone(), router.clone(), devices.clone());
+    log::info!("Starting IPC server at {}", audiolibre_engine::ipc::SOCKET_PATH);
 
     if let Err(e) = server.run().await {
         log::error!("IPC server error: {}", e);
