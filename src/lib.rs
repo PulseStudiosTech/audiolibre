@@ -3,6 +3,7 @@ pub mod capture;
 pub mod mixer;
 pub mod router;
 pub mod ipc;
+pub mod detect;
 pub mod error;
 
 pub use device::{AudioDevice, DeviceKind, DeviceManager};

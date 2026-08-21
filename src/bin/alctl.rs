@@ -63,6 +63,8 @@ fn build_command(args: &[String]) -> Option<Value> {
         "list-channels" => serde_json::json!({"cmd": "list_channels"}),
         "list-buses"    => serde_json::json!({"cmd": "list_buses"}),
         "list-routes"   => serde_json::json!({"cmd": "list_routes"}),
+        "list-mics"     => serde_json::json!({"cmd": "list_mics"}),
+        "get-output"    => serde_json::json!({"cmd": "get_active_output"}),
         "add-channel" if args.len() >= 3 =>
             serde_json::json!({"cmd": "add_channel", "name": args[1], "output_bus": args[2]}),
         "remove-channel" if args.len() >= 2 =>

@@ -15,6 +15,8 @@ pub enum Command {
     ListOutputs,
     ListChannels,
     ListRoutes,
+    ListMics,
+    GetActiveOutput,
     ListBuses,
     AddChannel { name: String, output_bus: String },
     RemoveChannel { id: String },
@@ -138,6 +140,14 @@ fn dispatch(
         Command::ListChannels => Response::ok(mixer.get_channels()),
         Command::ListBuses => Response::ok(mixer.get_buses()),
         Command::ListRoutes => Response::ok(router.all_routes()),
+        Command::ListMics => match crate::detect::detect_microphones(&devices) {
+            Ok(mics) => Response::ok(mics.iter().map(|m| serde_json::json!({"name": m.device.name, "score": m.score, "reason": m.reason})).collect::<Vec<_>>()),
+            Err(e) => Response::err(e.to_string()),
+        },
+        Command::GetActiveOutput => match crate::detect::detect_active_output(&devices) {
+            Ok(d) => Response::ok(d),
+            Err(e) => Response::err(e.to_string()),
+        },
         Command::AddChannel { name, output_bus } => {
             let ch = crate::MixerChannel::new(name, output_bus);
             let id = mixer.add_channel(ch);
