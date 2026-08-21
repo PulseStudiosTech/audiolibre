@@ -1,0 +1,32 @@
+[package]
+name = "audiolibre-engine"
+version = "0.1.0"
+edition = "2021"
+description = "AudioLibre cross-platform audio mixing engine"
+
+[lib]
+name = "audiolibre_engine"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+cpal = { version = "0.15", features = ["wasm-bindgen"] }
+dasp = { version = "0.11", features = ["interpolate", "signal", "ring_buffer"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+crossbeam-channel = "0.5"
+parking_lot = "0.12"
+log = "0.4"
+env_logger = "0.11"
+thiserror = "2"
+uuid = { version = "1", features = ["v4"] }
+
+[features]
+default = []
+pipewire = []    # Linux virtual device via PipeWire
+coreaudio-hal = [] # macOS HAL plugin
+wdm = []         # Windows WDM kernel driver IPC
+
+[profile.release]
+opt-level = 3
+lto = true
