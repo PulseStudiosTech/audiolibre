@@ -54,11 +54,11 @@ async fn main() {
     let mut outputs = Vec::new();
 
     if let Some(name) = mic_name {
-        sources.push(CaptureSource { device_name: name, channel_id: mic_id.clone() });
+        sources.push(CaptureSource { device_name: name, channel_id: mic_id.clone(), monitor: true });
     }
     if let Some(name) = output_name {
-        outputs.push(OutputDest { device_name: name.clone(), bus: "main".to_string() });
-        outputs.push(OutputDest { device_name: name, bus: "headphones".to_string() });
+        outputs.push(OutputDest { device_name: name.clone(), bus: "main".to_string(), is_monitor_out: false });
+        outputs.push(OutputDest { device_name: name, bus: "headphones".to_string(), is_monitor_out: true });
     }
 
     let _handle = match engine.start(sources, outputs) {

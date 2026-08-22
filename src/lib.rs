@@ -12,3 +12,4 @@ pub use mixer::{Mixer, MixerChannel, ChannelId};
 pub use router::Router;
 pub use error::AudioLibreError;
 pub use engine::{AudioEngine, CaptureSource, OutputDest};
+pub mod watch;
