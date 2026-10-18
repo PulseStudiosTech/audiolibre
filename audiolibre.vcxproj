@@ -19,6 +19,17 @@
     <ApplicationType>Driver</ApplicationType>
     <DriverTargetPlatform>Universal</DriverTargetPlatform>
     <DriverType>WDM</DriverType>
+    <!-- Explicitly pin to the 10.0.26100.0 kit (not whatever's "latest").
+         This driver's Port Class miniport code (src/miniport.cpp,
+         stream.cpp) was written against that kit's portcls.h/KS headers.
+         The newer 10.0.28000.0 kit bundled with VS2026 both lacks the
+         km\ (kernel-mode) headers entirely and changed several real
+         Port Class API signatures (PcNewPort, MAX_MINIPORTS, the
+         CMiniportWaveRT/CMiniportWaveRTStream interface contracts) --
+         building against it produces real compile errors, not a config
+         problem. Pinning here lets the existing driver source compile
+         as-written without needing a source-level API migration. -->
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
