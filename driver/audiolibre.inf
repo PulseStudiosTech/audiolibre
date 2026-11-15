@@ -1,0 +1,116 @@
+; audiolibre.inf — AudioLibre Virtual Audio Driver installation
+; Installs two virtual audio devices: Stream Mix and Headphones Mix
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=MEDIA
+ClassGUID={4d36e96c-e325-11ce-bfc1-08002be10318}
+Provider=%ManufacturerName%
+DriverVer=08/21/2026,0.1.0.0
+CatalogFile=audiolibre.cat
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir=13
+
+; ─── Manufacturer / Models ──────────────────────────────────────────────────
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64.10.0...16299,NTarm64.10.0...16299
+
+[Standard.NTamd64.10.0...16299]
+%AudioLibreDesc%=AudioLibre_Install, Root\AudioLibre
+
+[Standard.NTarm64.10.0...16299]
+%AudioLibreDesc%=AudioLibre_Install, Root\AudioLibre
+
+; ─── Install ────────────────────────────────────────────────────────────────
+
+[AudioLibre_Install.NTamd64]
+Include=ks.inf, wdmaudio.inf
+Needs=KS.Registration, WDMAUDIO.Registration
+CopyFiles=AudioLibre_CopyFiles
+AddReg=AudioLibre_AddReg
+
+[AudioLibre_Install.NTarm64]
+Include=ks.inf, wdmaudio.inf
+Needs=KS.Registration, WDMAUDIO.Registration
+CopyFiles=AudioLibre_CopyFiles
+AddReg=AudioLibre_AddReg
+
+[AudioLibre_CopyFiles]
+audiolibre.sys
+
+[AudioLibre_AddReg]
+; Register both virtual endpoints under Windows audio
+HKR,,AssociatedFilters,,"wdmaud,swmidi,redbook"
+HKR,,Driver,,audiolibre.sys
+HKR,Drivers,SubClasses,,"wave,midi,mixer"
+HKR,Drivers\wave\wdmaud.drv, Driver,,wdmaud.drv
+HKR,Drivers\wave\wdmaud.drv, Description,,%AudioLibreDesc%
+HKR,Drivers\mixer\wdmaud.drv,Driver,,wdmaud.drv
+HKR,Drivers\mixer\wdmaud.drv,Description,,%AudioLibreDesc%
+
+; ─── Services ───────────────────────────────────────────────────────────────
+
+[AudioLibre_Install.NTamd64.Services]
+AddService=AudioLibre, 0x00000002, AudioLibre_ServiceInstall
+
+[AudioLibre_Install.NTarm64.Services]
+AddService=AudioLibre, 0x00000002, AudioLibre_ServiceInstall
+
+[AudioLibre_ServiceInstall]
+DisplayName=%AudioLibreDesc%
+ServiceType=1   ; SERVICE_KERNEL_DRIVER
+StartType=3     ; SERVICE_DEMAND_START
+ErrorControl=1  ; SERVICE_ERROR_NORMAL
+ServiceBinary=%13%\audiolibre.sys
+LoadOrderGroup=Audio
+
+; ─── Interfaces (KS audio endpoints) ────────────────────────────────────────
+
+[AudioLibre_Install.NTamd64.Interfaces]
+AddInterface=%KSCATEGORY_AUDIO%,"GLOBAL",AudioLibre_StreamMix_Interface
+AddInterface=%KSCATEGORY_RENDER%,"GLOBAL",AudioLibre_StreamMix_Interface
+AddInterface=%KSCATEGORY_CAPTURE%,"GLOBAL",AudioLibre_Capture_Interface
+
+[AudioLibre_Install.NTarm64.Interfaces]
+AddInterface=%KSCATEGORY_AUDIO%,"GLOBAL",AudioLibre_StreamMix_Interface
+AddInterface=%KSCATEGORY_RENDER%,"GLOBAL",AudioLibre_StreamMix_Interface
+AddInterface=%KSCATEGORY_CAPTURE%,"GLOBAL",AudioLibre_Capture_Interface
+
+[AudioLibre_StreamMix_Interface]
+AddReg=AudioLibre_StreamMix_AddReg
+
+[AudioLibre_Capture_Interface]
+AddReg=AudioLibre_Capture_AddReg
+
+[AudioLibre_StreamMix_AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%StreamMixName%
+
+[AudioLibre_Capture_AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%CaptureName%
+
+; ─── Source media ────────────────────────────────────────────────────────────
+
+[SourceDisksNames]
+1=%DiskName%,,,""
+
+[SourceDisksFiles]
+audiolibre.sys=1,,
+
+; ─── Strings ─────────────────────────────────────────────────────────────────
+
+[Strings]
+ManufacturerName="Pulse Studios"
+AudioLibreDesc="AudioLibre Virtual Audio Device"
+StreamMixName="AudioLibre Stream Mix"
+HeadphonesName="AudioLibre Headphones Mix"
+CaptureName="AudioLibre Loopback Capture"
+DiskName="AudioLibre Driver Disk"
+KSCATEGORY_AUDIO="{6994AD04-93EF-11D0-A3CC-00A0C9223196}"
+KSCATEGORY_RENDER="{65E8773E-8F56-11D0-A3B9-00A0C9223196}"
+KSCATEGORY_CAPTURE="{65E8773F-8F56-11D0-A3B9-00A0C9223196}"
+Proxy.CLSID="{17CCA71B-ECD7-11D0-B908-00A0C9223196}"
